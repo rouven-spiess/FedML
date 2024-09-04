@@ -10,11 +10,176 @@
 #   universal: false
 
 -e file:.
+aiohappyeyeballs==2.4.0
+    # via aiohttp
+aiohttp==3.10.5
+    # via datasets
+    # via fsspec
+aiosignal==1.3.1
+    # via aiohttp
+attrs==24.2.0
+    # via aiohttp
+certifi==2024.8.30
+    # via requests
+cffi==1.17.0
+    # via cryptography
+charset-normalizer==3.3.2
+    # via requests
+click==8.1.7
+    # via typer
+colorama==0.4.6
+    # via typer
+contourpy==1.3.0
+    # via matplotlib
+cryptography==42.0.8
+    # via flwr
+cycler==0.12.1
+    # via matplotlib
+datasets==2.19.2
+    # via flwr-datasets
+dill==0.3.8
+    # via datasets
+    # via multiprocess
+filelock==3.15.4
+    # via datasets
+    # via huggingface-hub
+    # via torch
+flwr==1.11.0
+    # via fedml
+flwr-datasets==0.3.0
+    # via fedml
+fonttools==4.53.1
+    # via matplotlib
+frozenlist==1.4.1
+    # via aiohttp
+    # via aiosignal
+fsspec==2024.3.1
+    # via datasets
+    # via huggingface-hub
+    # via torch
+grpcio==1.66.1
+    # via flwr
+huggingface-hub==0.24.6
+    # via datasets
+idna==3.8
+    # via requests
+    # via yarl
 iniconfig==2.0.0
     # via pytest
+iterators==0.0.2
+    # via flwr
+jinja2==3.1.4
+    # via torch
+kiwisolver==1.4.6
+    # via matplotlib
+markdown-it-py==3.0.0
+    # via rich
+markupsafe==2.1.5
+    # via jinja2
+matplotlib==3.9.2
+    # via flwr-datasets
+    # via seaborn
+mdurl==0.1.2
+    # via markdown-it-py
+mpmath==1.3.0
+    # via sympy
+multidict==6.0.5
+    # via aiohttp
+    # via yarl
+multiprocess==0.70.16
+    # via datasets
+networkx==3.3
+    # via torch
+numpy==1.26.4
+    # via contourpy
+    # via datasets
+    # via flwr
+    # via flwr-datasets
+    # via matplotlib
+    # via pandas
+    # via pyarrow
+    # via seaborn
+    # via torchvision
 packaging==24.1
+    # via datasets
+    # via huggingface-hub
+    # via matplotlib
     # via pytest
+pandas==2.2.2
+    # via datasets
+    # via seaborn
+pathspec==0.12.1
+    # via flwr
+pillow==10.4.0
+    # via flwr-datasets
+    # via matplotlib
+    # via torchvision
 pluggy==1.5.0
     # via pytest
+protobuf==4.25.4
+    # via flwr
+pyarrow==16.1.0
+    # via datasets
+    # via flwr-datasets
+pyarrow-hotfix==0.6
+    # via datasets
+pycparser==2.22
+    # via cffi
+pycryptodome==3.20.0
+    # via flwr
+pygments==2.18.0
+    # via rich
+pyparsing==3.1.4
+    # via matplotlib
 pytest==8.3.2
+python-dateutil==2.9.0.post0
+    # via matplotlib
+    # via pandas
+pytz==2024.1
+    # via pandas
+pyyaml==6.0.2
+    # via datasets
+    # via huggingface-hub
+requests==2.32.3
+    # via datasets
+    # via huggingface-hub
+rich==13.8.0
+    # via typer
 ruff==0.6.3
+seaborn==0.13.2
+    # via flwr-datasets
+setuptools==74.1.1
+    # via torch
+shellingham==1.5.4
+    # via typer
+six==1.16.0
+    # via python-dateutil
+sympy==1.13.2
+    # via torch
+tomli==2.0.1
+    # via flwr
+tomli-w==1.0.0
+    # via flwr
+torch==2.4.0
+    # via fedml
+    # via torchvision
+torchvision==0.19.0
+    # via fedml
+tqdm==4.66.5
+    # via datasets
+    # via flwr-datasets
+    # via huggingface-hub
+typer==0.9.4
+    # via flwr
+typing-extensions==4.12.2
+    # via huggingface-hub
+    # via torch
+    # via typer
+tzdata==2024.1
+    # via pandas
+urllib3==2.2.2
+    # via requests
+xxhash==3.5.0
+    # via datasets
+yarl==1.9.8
+    # via aiohttp
