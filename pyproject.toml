@@ -20,12 +20,26 @@ build-backend = "hatchling.build"
 [tool]
 [tool.rye]
 managed = true
-dev-dependencies = [
-    "ruff>=0.6.3",
-    "pytest>=8.3.2",
-]
+dev-dependencies = ["ruff>=0.6.3", "pytest>=8.3.2"]
 
 [tool.hatch]
 metadata.allow-direct-references = true
 build.targets.wheel.packages = ["src/fedml"]
 version.source = "vcs"
+
+[tool.flwr.app.components]
+serverapp = "fedml.server_app:app"
+clientapp = "fedml.client_app:app"
+
+[tool.flwr.app.config]
+num-server-rounds = 8
+fraction-evaluate = 0.5
+local-epochs = 3
+learning-rate = 0.1
+batch-size = 32
+
+[tool.flwr.federations]
+default = "local-simulation"
+
+[tool.flwr.federations.local-simulation]
+options.num-supernodes = 10
