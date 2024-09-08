@@ -80,26 +80,33 @@ def set_weights(net, parameters):
 
 fds = None  # Cache FederatedDataset
 
-
 def load_data(partition_id: int, num_partitions: int, batch_size: int):
+    partition_train_test = data_loader_CNN(partition_id, num_partitions)
+    trainloader, testloader = data_transform_CNN(batch_size, partition_train_test)
+    return trainloader, testloader
+
+def data_loader_CNN(partition_id: int, num_partitions: int):
     """Load partition CIFAR10 data."""
     # Only initialize `FederatedDataset` once
     global fds
     if fds is None:
         partitioner = IidPartitioner(num_partitions=num_partitions)
         fds = FederatedDataset(
-            # dataset="uoft-cs/cifar10",
-            dataset="Jean-Baptiste/financial_news_sentiment",
+            dataset="uoft-cs/cifar10",
+            # dataset="Jean-Baptiste/financial_news_sentiment",
             partitioners={"train": partitioner},
         )
         print(fds)
     partition = fds.load_partition(partition_id)
     # Divide data on each node: 80% train, 20% test
     partition_train_test = partition.train_test_split(test_size=0.2, seed=42)
+    print('partition_train_test', partition_train_test)
+    return partition_train_test
+
+def data_transform_CNN(batch_size: int, partition_train_test):
     pytorch_transforms = Compose(
         [ToTensor(), Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))]
     )
-
     def apply_transforms(batch):
         """Apply transforms to the partition from FederatedDataset."""
         batch["img"] = [pytorch_transforms(img) for img in batch["img"]]
@@ -114,6 +121,8 @@ def load_data(partition_id: int, num_partitions: int, batch_size: int):
 
 
 def train(net, trainloader, valloader, epochs, learning_rate, device):
+    return train_CNN(net, trainloader, valloader, epochs, learning_rate, device)
+def train_CNN(net, trainloader, valloader, epochs, learning_rate, device):
     """Train the model on the training set."""
     net.to(device)  # move model to GPU if available
     criterion = torch.nn.CrossEntropyLoss().to(device)
@@ -127,7 +136,7 @@ def train(net, trainloader, valloader, epochs, learning_rate, device):
             criterion(net(images.to(device)), labels.to(device)).backward()
             optimizer.step()
 
-    val_loss, val_acc = test(net, valloader, device)
+    val_loss, val_acc = testing(net, valloader, device)
 
     results = {
         "val_loss": val_loss,
@@ -136,7 +145,9 @@ def train(net, trainloader, valloader, epochs, learning_rate, device):
     return results
 
 
-def test(net, testloader, device):
+def testing(net, testloader, device):
+    return evaluate_CNN(net, testloader, device)
+def testing_CNN(net, testloader, device):
     """Validate the model on the test set."""
     criterion = torch.nn.CrossEntropyLoss()
     correct, loss = 0, 0.0
