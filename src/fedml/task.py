@@ -1,12 +1,15 @@
 """pytorchexample: A Flower / PyTorch app."""
 
-from collections import OrderedDict
 import typing
+from collections import OrderedDict
+from collections.abc import Iterable
 
-import torch
-import torch.nn as nn
 import datasets
+import torch
+import numpy as np
+import torch.nn as nn
 import torch.nn.functional as F
+import torch.types
 from flwr_datasets import FederatedDataset
 from flwr_datasets.partitioner import IidPartitioner
 from torch.utils.data import DataLoader
@@ -69,12 +72,12 @@ class StackedLSTM(nn.Module):
         return self.fully_(lstm_out[:, -1, :])
 
 
-def get_weights(net: nn.Module) -> list[typing.Any]:
+def get_weights(net: nn.Module) -> list[np.ndarray]:
     return [val.cpu().numpy() for _, val in net.state_dict().items()]
 
 
-def set_weights(net, parameters):
-    params_dict = zip(net.state_dict().keys(), parameters)
+def set_weights(net: nn.Module, parameters: Iterable[typing.Any]) -> None:
+    params_dict = zip(net.state_dict(), parameters)
     state_dict = OrderedDict({k: torch.tensor(v) for k, v in params_dict})
     net.load_state_dict(state_dict, strict=True)
 
@@ -116,7 +119,10 @@ def data_loader_CNN(partition_id: int, num_partitions: int) -> datasets.DatasetD
     return partition_train_test
 
 
-def data_transform_CNN(batch_size: int, partition_train_test) -> TrainTestDataLoaders:
+def data_transform_CNN(
+    batch_size: int,
+    partition_train_test: datasets.DatasetDict,
+) -> TrainTestDataLoaders:
     pytorch_transforms = Compose([
         ToTensor(),
         Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
@@ -135,15 +141,30 @@ def data_transform_CNN(batch_size: int, partition_train_test) -> TrainTestDataLo
     return TrainTestDataLoaders(trainloader, testloader)
 
 
+class TrainCNNResult(typing.TypedDict):
+    val_loss: float
+    val_accuracy: float
+
+
 def train(
-    net, trainloader, valloader, epochs, learning_rate, device
-) -> dict[str, typing.Any]:
+    net: nn.Module,
+    trainloader: DataLoader,
+    valloader: DataLoader,
+    epochs: int,
+    learning_rate: float,
+    device: torch.types.Device,
+) -> TrainCNNResult:
     return train_CNN(net, trainloader, valloader, epochs, learning_rate, device)
 
 
 def train_CNN(
-    net, trainloader, valloader, epochs, learning_rate, device
-) -> dict[str, typing.Any]:
+    net: nn.Module,
+    trainloader: DataLoader,
+    valloader: DataLoader,
+    epochs: int,
+    learning_rate: float,
+    device: torch.types.Device,
+) -> TrainCNNResult:
     """Train the model on the training set."""
     net.to(device)  # move model to GPU if available
     criterion = torch.nn.CrossEntropyLoss().to(device)
@@ -165,11 +186,19 @@ def train_CNN(
     }
 
 
-def testing(net, testloader, device) -> tuple[float, float]:
+def testing(
+    net: nn.Module,
+    testloader: DataLoader,
+    device: torch.types.Device,
+) -> tuple[float, float]:
     return testing_CNN(net, testloader, device)
 
 
-def testing_CNN(net, testloader, device) -> tuple[float, float]:
+def testing_CNN(
+    net: nn.Module,
+    testloader: DataLoader,
+    device: torch.types.Device,
+) -> tuple[float, float]:
     """Validate the model on the test set."""
     criterion = torch.nn.CrossEntropyLoss()
     correct, loss = 0, 0.0
@@ -180,6 +209,6 @@ def testing_CNN(net, testloader, device) -> tuple[float, float]:
             outputs = net(images)
             loss += criterion(outputs, labels).item()
             correct += (torch.max(outputs.data, 1)[1] == labels).sum().item()
-    accuracy = correct / len(testloader.dataset)
+    accuracy = correct / len(testloader)
     loss = loss / len(testloader)
     return loss, accuracy
