@@ -94,8 +94,7 @@ def load_data(
     partition_id: int, num_partitions: int, batch_size: int
 ) -> TrainTestDataLoaders:
     partition_train_test = data_loader_CNN(partition_id, num_partitions)
-    trainloader, testloader = data_transform_CNN(batch_size, partition_train_test)
-    return TrainTestDataLoaders(trainloader, testloader)
+    return data_transform_CNN(batch_size, partition_train_test)
 
 
 @functools.lru_cache
