@@ -4,8 +4,8 @@ import torch
 from flwr.client import ClientApp, NumPyClient
 from flwr.common import Context
 
-from pytorchexample.task import Net, get_weights, load_data, set_weights, test, train
-
+# from pytorchexample.task import Net, get_weights, load_data, set_weights, test, train
+from task import Net, get_weights, load_data, set_weights, testing, train
 
 # Define Flower Client
 class FlowerClient(NumPyClient):
@@ -33,7 +33,7 @@ class FlowerClient(NumPyClient):
     def evaluate(self, parameters, config):
         """Evaluate the model on the data this client has."""
         set_weights(self.net, parameters)
-        loss, accuracy = test(self.net, self.valloader, self.device)
+        loss, accuracy = testing(self.net, self.valloader, self.device)
         return loss, len(self.valloader.dataset), {"accuracy": accuracy}
 
 

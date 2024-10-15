@@ -146,7 +146,7 @@ def train_CNN(net, trainloader, valloader, epochs, learning_rate, device):
 
 
 def testing(net, testloader, device):
-    return evaluate_CNN(net, testloader, device)
+    return testing_CNN(net, testloader, device)
 def testing_CNN(net, testloader, device):
     """Validate the model on the test set."""
     criterion = torch.nn.CrossEntropyLoss()
