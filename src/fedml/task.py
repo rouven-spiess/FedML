@@ -1,9 +1,11 @@
 """pytorchexample: A Flower / PyTorch app."""
 
 from collections import OrderedDict
+import typing
 
 import torch
 import torch.nn as nn
+import datasets
 import torch.nn.functional as F
 from flwr_datasets import FederatedDataset
 from flwr_datasets.partitioner import IidPartitioner
@@ -14,7 +16,7 @@ from torchvision.transforms import Compose, Normalize, ToTensor
 class Net(nn.Module):
     """Model (simple CNN adapted from 'PyTorch: A 60 Minute Blitz')"""
 
-    def __init__(self):
+    def __init__(self) -> None:
         super(Net, self).__init__()
         self.conv1 = nn.Conv2d(3, 6, 5)
         self.pool = nn.MaxPool2d(2, 2)
@@ -23,7 +25,7 @@ class Net(nn.Module):
         self.fc2 = nn.Linear(120, 84)
         self.fc3 = nn.Linear(84, 10)
 
-    def forward(self, x):
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
         x = self.pool(F.relu(self.conv1(x)))
         x = self.pool(F.relu(self.conv2(x)))
         x = x.view(-1, 16 * 5 * 5)
@@ -41,14 +43,14 @@ class StackedLSTM(nn.Module):
     (https://arxiv.org/abs/1802.07876)
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
 
         self.embedding = nn.Embedding(80, 8)
         self.lstm = nn.LSTM(8, 256, num_layers=2, dropout=0.5, batch_first=True)
         self.fully_ = nn.Linear(256, 80)
 
-    def forward(self, text):
+    def forward(self, text: torch.Tensor) -> torch.Tensor:
         """Forward pass of the StackedLSTM.
 
         Parameters
@@ -64,11 +66,10 @@ class StackedLSTM(nn.Module):
         embedded = self.embedding(text)
         self.lstm.flatten_parameters()
         lstm_out, _ = self.lstm(embedded)
-        final_output = self.fully_(lstm_out[:, -1, :])
-        return final_output
+        return self.fully_(lstm_out[:, -1, :])
 
 
-def get_weights(net):
+def get_weights(net: nn.Module) -> list[typing.Any]:
     return [val.cpu().numpy() for _, val in net.state_dict().items()]
 
 
@@ -80,12 +81,23 @@ def set_weights(net, parameters):
 
 fds = None  # Cache FederatedDataset
 
-def load_data(partition_id: int, num_partitions: int, batch_size: int):
+
+class TrainTestDataLoaders(typing.NamedTuple):
+    """A pair of train and test data loaders."""
+
+    train: DataLoader
+    test: DataLoader
+
+
+def load_data(
+    partition_id: int, num_partitions: int, batch_size: int
+) -> TrainTestDataLoaders:
     partition_train_test = data_loader_CNN(partition_id, num_partitions)
     trainloader, testloader = data_transform_CNN(batch_size, partition_train_test)
-    return trainloader, testloader
+    return TrainTestDataLoaders(trainloader, testloader)
 
-def data_loader_CNN(partition_id: int, num_partitions: int):
+
+def data_loader_CNN(partition_id: int, num_partitions: int) -> datasets.DatasetDict:
     """Load partition CIFAR10 data."""
     # Only initialize `FederatedDataset` once
     global fds
@@ -100,13 +112,16 @@ def data_loader_CNN(partition_id: int, num_partitions: int):
     partition = fds.load_partition(partition_id)
     # Divide data on each node: 80% train, 20% test
     partition_train_test = partition.train_test_split(test_size=0.2, seed=42)
-    print('partition_train_test', partition_train_test)
+    print("partition_train_test", partition_train_test)
     return partition_train_test
 
-def data_transform_CNN(batch_size: int, partition_train_test):
-    pytorch_transforms = Compose(
-        [ToTensor(), Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))]
-    )
+
+def data_transform_CNN(batch_size: int, partition_train_test) -> TrainTestDataLoaders:
+    pytorch_transforms = Compose([
+        ToTensor(),
+        Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
+    ])
+
     def apply_transforms(batch):
         """Apply transforms to the partition from FederatedDataset."""
         batch["img"] = [pytorch_transforms(img) for img in batch["img"]]
@@ -117,12 +132,18 @@ def data_transform_CNN(batch_size: int, partition_train_test):
         partition_train_test["train"], batch_size=batch_size, shuffle=True
     )
     testloader = DataLoader(partition_train_test["test"], batch_size=batch_size)
-    return trainloader, testloader
+    return TrainTestDataLoaders(trainloader, testloader)
 
 
-def train(net, trainloader, valloader, epochs, learning_rate, device):
+def train(
+    net, trainloader, valloader, epochs, learning_rate, device
+) -> dict[str, typing.Any]:
     return train_CNN(net, trainloader, valloader, epochs, learning_rate, device)
-def train_CNN(net, trainloader, valloader, epochs, learning_rate, device):
+
+
+def train_CNN(
+    net, trainloader, valloader, epochs, learning_rate, device
+) -> dict[str, typing.Any]:
     """Train the model on the training set."""
     net.to(device)  # move model to GPU if available
     criterion = torch.nn.CrossEntropyLoss().to(device)
@@ -138,16 +159,17 @@ def train_CNN(net, trainloader, valloader, epochs, learning_rate, device):
 
     val_loss, val_acc = testing(net, valloader, device)
 
-    results = {
+    return {
         "val_loss": val_loss,
         "val_accuracy": val_acc,
     }
-    return results
 
 
-def testing(net, testloader, device):
+def testing(net, testloader, device) -> tuple[float, float]:
     return testing_CNN(net, testloader, device)
-def testing_CNN(net, testloader, device):
+
+
+def testing_CNN(net, testloader, device) -> tuple[float, float]:
     """Validate the model on the test set."""
     criterion = torch.nn.CrossEntropyLoss()
     correct, loss = 0, 0.0
