@@ -4,6 +4,7 @@ import typing
 from collections import OrderedDict
 from collections.abc import Iterable
 
+import functools
 import datasets
 import torch
 import numpy as np
@@ -82,9 +83,6 @@ def set_weights(net: nn.Module, parameters: Iterable[typing.Any]) -> None:
     net.load_state_dict(state_dict, strict=True)
 
 
-fds = None  # Cache FederatedDataset
-
-
 class TrainTestDataLoaders(typing.NamedTuple):
     """A pair of train and test data loaders."""
 
@@ -100,18 +98,19 @@ def load_data(
     return TrainTestDataLoaders(trainloader, testloader)
 
 
+@functools.lru_cache
+def get_federated_dataset(num_partitions: int) -> FederatedDataset:
+    partitioner = IidPartitioner(num_partitions=num_partitions)
+    return FederatedDataset(
+        dataset="uoft-cs/cifar10",
+        # dataset="Jean-Baptiste/financial_news_sentiment",
+        partitioners={"train": partitioner},
+    )
+
+
 def data_loader_CNN(partition_id: int, num_partitions: int) -> datasets.DatasetDict:
     """Load partition CIFAR10 data."""
-    # Only initialize `FederatedDataset` once
-    global fds
-    if fds is None:
-        partitioner = IidPartitioner(num_partitions=num_partitions)
-        fds = FederatedDataset(
-            dataset="uoft-cs/cifar10",
-            # dataset="Jean-Baptiste/financial_news_sentiment",
-            partitioners={"train": partitioner},
-        )
-        print(fds)
+    fds = get_federated_dataset(num_partitions)
     partition = fds.load_partition(partition_id)
     # Divide data on each node: 80% train, 20% test
     partition_train_test = partition.train_test_split(test_size=0.2, seed=42)
