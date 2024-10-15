@@ -1,13 +1,13 @@
 """pytorchexample: A Flower / PyTorch app."""
 
+import functools
 import typing
 from collections import OrderedDict
 from collections.abc import Iterable
 
-import functools
 import datasets
-import torch
 import numpy as np
+import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.types
