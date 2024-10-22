@@ -121,6 +121,7 @@ def data_transform_CNN(
     batch_size: int,
     partition_train_test: datasets.DatasetDict,
 ) -> TrainTestDataLoaders:
+    # TODO: adapt for LSTM
     pytorch_transforms = Compose([
         ToTensor(),
         Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
