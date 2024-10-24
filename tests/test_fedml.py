@@ -8,7 +8,7 @@ from torchvision.transforms import Compose, Normalize, ToTensor
 from torch import Size, nn, optim
 
 
-from src.fedml.task import Net, train, testing, load_data
+from src.fedml.task2 import Net, train, testing, load_data
 
 @pytest.mark.skip
 def test_load_CIFAR10():

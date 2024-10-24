@@ -33,8 +33,8 @@ build.targets.wheel.packages = ["src/fedml"]
 version.source = "vcs"
 
 [tool.flwr.app.components]
-serverapp = "fedml.server_app:app"
-clientapp = "fedml.client_app:app"
+serverapp = "src.fedml.server_app:app"
+clientapp = "src.fedml.client_app:app"
 
 [tool.flwr.app.config]
 num-server-rounds = 8
