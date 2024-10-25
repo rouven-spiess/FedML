@@ -17,8 +17,11 @@ aiohttp==3.10.5
     # via fsspec
 aiosignal==1.3.1
     # via aiohttp
+    # via ray
 attrs==24.2.0
     # via aiohttp
+    # via jsonschema
+    # via referencing
 certifi==2024.8.30
     # via requests
 cffi==1.17.0
@@ -26,8 +29,7 @@ cffi==1.17.0
 charset-normalizer==3.3.2
     # via requests
 click==8.1.7
-    # via typer
-colorama==0.4.6
+    # via ray
     # via typer
 contourpy==1.3.0
     # via matplotlib
@@ -43,21 +45,23 @@ dill==0.3.8
 filelock==3.15.4
     # via datasets
     # via huggingface-hub
+    # via ray
     # via torch
-flwr==1.11.0
+flwr==1.12.0
     # via fedml
-flwr-datasets==0.3.0
+flwr-datasets==0.4.0
     # via fedml
 fonttools==4.53.1
     # via matplotlib
 frozenlist==1.4.1
     # via aiohttp
     # via aiosignal
+    # via ray
 fsspec==2024.3.1
     # via datasets
     # via huggingface-hub
     # via torch
-grpcio==1.66.1
+grpcio==1.67.0
     # via flwr
 huggingface-hub==0.24.6
     # via datasets
@@ -68,6 +72,10 @@ iterators==0.0.2
     # via flwr
 jinja2==3.1.4
     # via torch
+jsonschema==4.23.0
+    # via ray
+jsonschema-specifications==2024.10.1
+    # via jsonschema
 kiwisolver==1.4.6
     # via matplotlib
 markdown-it-py==3.0.0
@@ -81,6 +89,8 @@ mdurl==0.1.2
     # via markdown-it-py
 mpmath==1.3.0
     # via sympy
+msgpack==1.1.0
+    # via ray
 multidict==6.0.5
     # via aiohttp
     # via yarl
@@ -102,6 +112,7 @@ packaging==24.1
     # via datasets
     # via huggingface-hub
     # via matplotlib
+    # via ray
 pandas==2.2.2
     # via datasets
     # via seaborn
@@ -113,6 +124,7 @@ pillow==10.4.0
     # via torchvision
 protobuf==4.25.4
     # via flwr
+    # via ray
 pyarrow==16.1.0
     # via datasets
     # via flwr-datasets
@@ -134,11 +146,21 @@ pytz==2024.1
 pyyaml==6.0.2
     # via datasets
     # via huggingface-hub
+    # via ray
+ray==2.38.0
+    # via fedml
+referencing==0.35.1
+    # via jsonschema
+    # via jsonschema-specifications
 requests==2.32.3
     # via datasets
     # via huggingface-hub
+    # via ray
 rich==13.8.0
     # via typer
+rpds-py==0.20.0
+    # via jsonschema
+    # via referencing
 seaborn==0.13.2
     # via flwr-datasets
 setuptools==74.1.2
@@ -147,22 +169,22 @@ shellingham==1.5.4
     # via typer
 six==1.16.0
     # via python-dateutil
-sympy==1.13.2
+sympy==1.13.1
     # via torch
 tomli==2.0.1
     # via flwr
 tomli-w==1.0.0
     # via flwr
-torch==2.4.1
+torch==2.5.0
     # via fedml
     # via torchvision
-torchvision==0.19.1
+torchvision==0.20.0
     # via fedml
 tqdm==4.66.5
     # via datasets
     # via flwr-datasets
     # via huggingface-hub
-typer==0.9.4
+typer==0.12.5
     # via flwr
 typing-extensions==4.12.2
     # via huggingface-hub
