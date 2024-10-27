@@ -78,6 +78,7 @@ def load_data(partition_id: int, num_partitions: int, batch_size: int):
 def train(net, trainloader, valloader, epochs, learning_rate, device):
     """Train the model on the training set."""
     net.to(device)  # move model to GPU if available
+    print("src/fedml training on", device)
     criterion = torch.nn.CrossEntropyLoss().to(device)
     optimizer = torch.optim.SGD(net.parameters(), lr=learning_rate, momentum=0.9)
     net.train()
