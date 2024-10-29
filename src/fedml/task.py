@@ -176,7 +176,7 @@ def train_CNN(
             criterion(net(images.to(device)), labels.to(device)).backward()
             optimizer.step()
 
-    val_loss, val_acc = testing(net, valloader, device)
+    val_loss, val_acc = test(net, valloader, device)
 
     return {
         "val_loss": val_loss,
@@ -184,15 +184,15 @@ def train_CNN(
     }
 
 
-def testing(
+def test(
     net: nn.Module,
     testloader: DataLoader,
     device: torch.types.Device,
 ) -> tuple[float, float]:
-    return testing_CNN(net, testloader, device)
+    return test_CNN(net, testloader, device)
 
 
-def testing_CNN(
+def test_CNN(
     net: nn.Module,
     testloader: DataLoader,
     device: torch.types.Device,

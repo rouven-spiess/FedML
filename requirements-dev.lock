@@ -112,6 +112,7 @@ numpy==1.26.4
     # via pandas
     # via pyarrow
     # via seaborn
+    # via torchtext
     # via torchvision
 packaging==24.1
     # via datasets
@@ -165,6 +166,7 @@ requests==2.32.3
     # via datasets
     # via huggingface-hub
     # via ray
+    # via torchtext
 rich==13.8.0
     # via typer
 rpds-py==0.20.0
@@ -187,13 +189,17 @@ tomli-w==1.0.0
     # via flwr
 torch==2.5.0
     # via fedml
+    # via torchtext
     # via torchvision
+torchtext==0.18.0
+    # via fedml
 torchvision==0.20.0
     # via fedml
 tqdm==4.66.5
     # via datasets
     # via flwr-datasets
     # via huggingface-hub
+    # via torchtext
 typer==0.12.5
     # via flwr
 typing-extensions==4.12.2
