@@ -1,3 +1,4 @@
+from collections.abc import Callable
 from importlib.metadata import version
 
 import torch
@@ -55,34 +56,37 @@ class StackedLSTM(nn.Module):
 
 
 class TextDataset(Dataset):
-    def __init__(self, data, vocab, tokenizer):
+    def __init__(self, data, vocab, tokenizer) -> None:
         self.data = data
         self.vocab = vocab
         self.tokenizer = tokenizer
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self.data)
 
-    def __getitem__(self, idx):
+    def __getitem__(self, idx: int) -> tuple[torch.Tensor, torch.Tensor]:
         text, label = self.data[idx]
         tokens = self.tokenizer(text)
         token_ids = [self.vocab[token] for token in tokens]
-        return torch.tensor(token_ids, dtype=torch.long), torch.tensor(
-            label, dtype=torch.long
+        return (
+            torch.tensor(token_ids, dtype=torch.long),
+            torch.tensor(label, dtype=torch.long),
         )
 
 
-def collate_batch(batch):
+def collate_batch(batch) -> tuple[torch.Tensor, torch.Tensor]:
     text_list, label_list = [], []
-    for _text, _label in batch:
-        text_list.append(_text)
-        label_list.append(_label)
-    text_list = pad_sequence(text_list, batch_first=True, padding_value=vocab["<pad>"])
-    label_list = torch.tensor(label_list, dtype=torch.long)
-    return text_list, label_list
+    for text, label in batch:
+        text_list.append(text)
+        label_list.append(label)
+    text_tensor = pad_sequence(
+        text_list, batch_first=True, padding_value=vocab["<pad>"]
+    )
+    label_tensor = torch.tensor(label_list, dtype=torch.long)
+    return text_tensor, label_tensor
 
 
-def train_LSTM(device: str = "cpu"):
+def train_LSTM(device: str = "cpu") -> None:
     # Prepare data
     partitioner = IidPartitioner(num_partitions=num_partitions)
     fds = FederatedDataset(
@@ -100,15 +104,15 @@ def train_LSTM(device: str = "cpu"):
     print("partition_train_test: ", partition_train_test)
 
     # Example data
-    train_data = [
+    train_data: list[tuple[str, str]] = [
         (data["text"], data["sentiment"]) for data in partition_train_test["train"]
     ]
-    test_data = [
+    test_data: list[tuple[str, str]] = [
         (data["text"], data["sentiment"]) for data in partition_train_test["test"]
     ]
 
     # Tokenizer and vocabulary
-    tokenizer = get_tokenizer("basic_english")
+    tokenizer: Callable[[str], int] = get_tokenizer("basic_english")
     vocab = build_vocab_from_iterator(
         map(tokenizer, [text for text, _ in train_data]), specials=["<unk>", "<pad>"]
     )
@@ -142,6 +146,10 @@ def train_LSTM(device: str = "cpu"):
         print(f"Epoch {_}, val_loss: {val_loss}, val_acc: {val_acc}")
 
 
-if __name__ == "__main__":
+def main() -> None:
     version("torchtext")
     train_LSTM()
+
+
+if __name__ == "__main__":
+    main()
