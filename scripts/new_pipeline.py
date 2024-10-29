@@ -87,6 +87,7 @@ def collate_batch(batch) -> tuple[torch.Tensor, torch.Tensor]:
 
 
 def train_LSTM(device: str = "cpu") -> None:
+    # Data stuff!
     # Prepare data
     partitioner = IidPartitioner(num_partitions=num_partitions)
     fds = FederatedDataset(
@@ -128,12 +129,14 @@ def train_LSTM(device: str = "cpu") -> None:
         test_dataset, batch_size=batch_size, collate_fn=collate_batch
     )
 
-    # Train
+    # Training setup
     net = StackedLSTM()
     net.to(device)
     print("src/fedml training on", device)
     criterion = torch.nn.CrossEntropyLoss().to(device)
     optimizer = torch.optim.SGD(net.parameters(), lr=learning_rate, momentum=0.9)
+
+    # Training
     net.train()
     for _ in range(epochs):
         for text, labels in train_loader:
