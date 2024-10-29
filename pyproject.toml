@@ -1,36 +1,37 @@
 [project]
 name = "fedml"
 version = "0.1.0"
-dynamic = ["version"]
 description = "Add your description here"
 authors = [{ name = "Rouven Spiess", email = "rouven@mailbox.org" }]
 dependencies = [
-    "flwr[simulation]>=1.11.0",
-    "flwr-datasets[vision]>=0.3.0",
-    "torch>=2.4.1",
-    "torchvision>=0.19.1",
+    "flwr[simulation]>=1.12.0",
+    "flwr-datasets[vision]>=0.4.0",
+    "torch>=2.5.0",
+    "torchvision>=0.20.0",
+    "ray>=2.38.0",
+    "torchtext>=0.18.0",
 ]
 readme = "README.md"
-requires-python = ">= 3.11"
+requires-python = ">= 3.12"
 license = { text = "Apache-2.0" }
 
+
 [build-system]
-requires = ["hatchling", "hatch-vcs"]
+requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool]
 [tool.rye]
 managed = true
 dev-dependencies = [
-    "ruff>=0.6.9",
+    "ruff>=0.7.1",
     "pytest>=8.3.3",
-    "mypy[d]>=1.12.0",
+    "mypy[d]>=1.13.0",
 ]
 
 [tool.hatch]
 metadata.allow-direct-references = true
 build.targets.wheel.packages = ["src/fedml"]
-version.source = "vcs"
 
 [tool.flwr.app.components]
 serverapp = "fedml.server_app:app"
