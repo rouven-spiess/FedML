@@ -25,15 +25,13 @@ def server_fn(context: Context) -> ServerAppComponents:
     """Construct components that set the ServerApp behaviour."""
 
     # Read from config
-    num_rounds = context.run_config["num-server-rounds"]
-    assert isinstance(num_rounds, int)
+    num_rounds = int(context.run_config["num-server-rounds"])
 
     # Initialize model parameters
     ndarrays = get_weights(Net())
     parameters = ndarrays_to_parameters(ndarrays)
 
-    fraction_evaluate = context.run_config["fraction-evaluate"]
-    assert isinstance(fraction_evaluate, float)
+    fraction_evaluate = float(context.run_config["fraction-evaluate"])
 
     # Define the strategy
     strategy = FedAvg(

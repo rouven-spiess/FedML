@@ -243,8 +243,8 @@ fabric.properties
 
 # Added Rouven
 requests
-LSTM-pytorch
-_tmp
+/LSTM-pytorch
+/_tmp
 
 # https://github.com/github/gitignore/blob/main/Global/macOS.gitignore
 # General
